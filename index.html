@@ -23,10 +23,10 @@
   }
   /* Telegram theme overrides when running inside Telegram */
   body.in-tg{
-    --bg:var(--tg-theme-secondary-bg-color,var(--bg));
-    --card:var(--tg-theme-bg-color,var(--card));
-    --text:var(--tg-theme-text-color,var(--text));
-    --muted:var(--tg-theme-hint-color,var(--muted));
+    --bg:var(--tg-theme-secondary-bg-color,#f6f4ef);
+    --card:var(--tg-theme-bg-color,#ffffff);
+    --text:var(--tg-theme-text-color,#1b1c1e);
+    --muted:var(--tg-theme-hint-color,#6f7278);
   }
   *{box-sizing:border-box}
   html,body{margin:0;height:100%}
@@ -75,7 +75,8 @@
   .bottom button.on{color:var(--accent-text); background:var(--accent-soft); font-weight:600}
 
   /* detail sheet */
-  .sheet{position:fixed; inset:0; background:var(--bg); display:none; flex-direction:column; z-index:10}
+  .sheet{position:fixed; inset:0; background:var(--bg,#f6f4ef); background-color:var(--bg,#f6f4ef); display:none; flex-direction:column; z-index:10}
+  body.in-tg .sheet .top{display:none}
   .sheet.open{display:flex}
   .sheet .top{display:flex; align-items:center; gap:8px; padding:12px 16px; border-bottom:1px solid var(--line); background:var(--card)}
   .sheet .top button{border:0; background:transparent; font-size:15px; color:var(--accent-text); padding:4px 0}
@@ -127,7 +128,7 @@
 <div class="app">
   <header>
     <h1>Retail Club AI · Калифорния</h1>
-    <p>19–27 сентября 2026 · Ташкент → Нью-Йорк → Лос-Анджелес</p>
+    <p>19–27 сентября 2026 · Ташкент → Нью-Йорк → Лос-Анджелес <span style="opacity:.5">· v3</span></p>
   </header>
 
   <div id="view-schedule">
@@ -199,7 +200,9 @@ const GENERAL = {id:'g00', d:'', t:'', k:'general', p:'Общие заметки
 const KIND = {flight:'Перелёт', hotel:'Отель', free:'Свободно', event:'Фестиваль', store:'Магазин', general:'Общее'};
 
 /* ---------- хранилище: Telegram CloudStorage → localStorage ---------- */
-const tg = window.Telegram && window.Telegram.WebApp;
+const tgRaw = window.Telegram && window.Telegram.WebApp;
+// скрипт Telegram создаёт объект и в обычном браузере — считаем, что мы в Telegram, только если есть данные запуска
+const tg = tgRaw && (tgRaw.initData || (tgRaw.platform && tgRaw.platform !== 'unknown')) ? tgRaw : null;
 const cloud = tg && tg.CloudStorage && tg.isVersionAtLeast && tg.isVersionAtLeast('6.9') ? tg.CloudStorage : null;
 const KEYS = [...ACTS, GENERAL].map(a => 'n_' + a.id);
 let notes = {}; // id -> [{t, x}]
